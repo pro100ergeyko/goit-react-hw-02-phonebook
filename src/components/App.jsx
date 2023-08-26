@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Formik, Field, Form } from 'formik';
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 import * as Yup from 'yup';
 
 import { Container } from './Container.styled';
