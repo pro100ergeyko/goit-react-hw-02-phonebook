@@ -1,50 +1,78 @@
 import React, { Component } from 'react';
-import { Formik, Field, Form } from 'formik';
-// import { nanoid } from 'nanoid';
-import * as Yup from 'yup';
-
-import { Container } from './Container.styled';
-
-const PhoneBookSchema = Yup.object().shape({
-  Name: Yup.string()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required(
-      'Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d Artagnan'
-    ),
-  number: Yup.number()
-    .min(7, 'Too Short!')
-    .max(9, 'Too Long!')
-    .required(
-      'Phone number must be digits and can contain spaces, dashes, parentheses and can start with +'
-    ),
-});
+import {
+  Wrapper,
+  Container,
+  PhoneBookTitle,
+  ContactTitle,
+} from './Global.styled';
+import { ContactsForm } from './ContactsForm/ContactsForm';
+import { ContactFilter } from './ContactFilter/ContactFilter';
+import { ContactList } from './ContactList/ContactList';
 
 export class App extends Component {
-  render() {
-    return (
-      <Container>
-        <Formik
-          initialValues={{ contacts: [], filter: '', name: '', number: '' }}
-          validationSchema={PhoneBookSchema}
-          onSubmit={values => {
-            console.log(values);
-          }}
-        >
-          <Form>
-            <label>
-              Name
-              <Field name="name" type="text" />
-            </label>
-            <label>
-              Number
-              <Field name="number" type="number" />
-            </label>
+  state = {
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
+    filter: '',
+  };
 
-            <button type="submit">Add contact</button>
-          </Form>
-        </Formik>
-      </Container>
+  handleSubmit = ({ id, name, number }) => {
+    const contact = { id, name, number };
+    this.setState(({ contacts }) => {
+      return { contacts: [contact, ...contacts] };
+    });
+  };
+
+  handlDelete = id =>
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
+    }));
+
+  handleFilter = evt => {
+    this.setState({
+      filter: evt.target.value,
+    });
+  };
+
+  handleContactFilter = () => {
+    let contactFilter = [];
+    const { filter, contacts } = this.state;
+    if (filter) {
+      contactFilter = contacts.filter(
+        contact =>
+          contact.name.includes(filter) ||
+          contact.name.toLocaleLowerCase().includes(filter)
+      );
+    } else {
+      return contacts;
+    }
+    return contactFilter;
+  };
+
+  render() {
+    const { contacts, filter } = this.state;
+
+    return (
+      <Wrapper>
+        <Container>
+          <PhoneBookTitle>Phonebook</PhoneBookTitle>
+          <ContactsForm onSubmit={this.handleSubmit} contacts={contacts} />
+        </Container>
+        <Container>
+          <ContactTitle>Contacts</ContactTitle>
+          <ContactFilter onFilter={this.handleFilter} filter={filter} />
+          <ContactList
+            contacts={contacts}
+            filter={filter}
+            onDelete={this.handlDelete}
+            contactFilter={this.handleContactFilter}
+          />
+        </Container>
+      </Wrapper>
     );
   }
 }
