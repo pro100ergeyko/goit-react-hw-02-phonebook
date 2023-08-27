@@ -13,13 +13,16 @@ import {
 
 const ContactsSchema = Yup.object().shape({
   name: Yup.string()
-    .min(4, 'To short')
-    .max(50, 'Too Long!')
-    .required('Required'),
+    .matches(/^[a-zA-Zа-яА-Я\s'-]*$/, 'Name should not contain numbers')
+    .required(),
   number: Yup.string()
-    .min(7, 'To short')
-    .max(9, 'Too Long!')
-    .required('Required'),
+    .min(5, 'Too short  phone number')
+    .max(10, 'Too long phone number')
+    .matches(
+      /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+      'Invalid phone number format'
+    )
+    .required(),
 });
 
 export const ContactsForm = ({ contacts, onSubmit }) => {
