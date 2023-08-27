@@ -44,7 +44,7 @@ export const ContactsForm = ({ contacts, onSubmit }) => {
     <Formik
       initialValues={{ name: '', number: '' }}
       onSubmit={handleSubmit}
-      validateSchema={ContactsSchema}
+      validationSchema={ContactsSchema}
     >
       <AddContactToForm>
         <Label>
