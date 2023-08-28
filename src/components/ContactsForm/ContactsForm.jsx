@@ -1,6 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 import * as Yup from 'yup';
 
 import {
@@ -25,28 +25,11 @@ const ContactsSchema = Yup.object().shape({
     .required(),
 });
 
-export const ContactsForm = ({ contacts, onSubmit }) => {
-  const handleSubmit = ({ name, number }, { resetForm }) => {
-    const nameInContact = contacts.find(
-      contact => contact.name.toLocaleLowerCase() === name.toLocaleLowerCase()
-    );
-
-    if (nameInContact) {
-      alert(`${name} is already in contacts.`);
-      return;
-    }
-
-    const createNewContact = { id: nanoid(), name, number };
-
-    onSubmit(createNewContact);
-
-    resetForm();
-  };
-
+export const ContactsForm = ({ onSubmit }) => {
   return (
     <Formik
       initialValues={{ name: '', number: '' }}
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
       validationSchema={ContactsSchema}
     >
       <AddContactToForm>

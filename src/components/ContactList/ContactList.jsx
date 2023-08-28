@@ -1,11 +1,9 @@
 import { ContactItem } from './ContactItem/ContactItem';
 
-export const ContactList = ({ onDelete, contactFilter }) => {
-  const filterResult = contactFilter();
-
+export const ContactList = ({ onDelete, contacts }) => {
   return (
     <ul>
-      {filterResult.map(({ id, name, number }) => (
+      {contacts.map(({ id, name, number }) => (
         <ContactItem
           key={id}
           id={id}

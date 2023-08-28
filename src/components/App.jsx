@@ -8,6 +8,7 @@ import {
 import { ContactsForm } from './ContactsForm/ContactsForm';
 import { ContactFilter } from './ContactFilter/ContactFilter';
 import { ContactList } from './ContactList/ContactList';
+import { nanoid } from 'nanoid';
 
 export class App extends Component {
   state = {
@@ -20,11 +21,29 @@ export class App extends Component {
     filter: '',
   };
 
-  handleSubmit = ({ id, name, number }) => {
-    const contact = { id, name, number };
-    this.setState(({ contacts }) => {
-      return { contacts: [contact, ...contacts] };
-    });
+  handleSubmit = ({ name, number }, { resetForm }) => {
+    const { contacts } = this.state;
+
+    const nameInContact = contacts.find(
+      contact => contact.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+    );
+
+    if (nameInContact) {
+      alert(`${name} is already in contacts.`);
+
+      return null;
+    }
+    this.setState(prevState => ({
+      contacts: [
+        ...prevState.contacts,
+        {
+          id: nanoid(),
+          name,
+          number,
+        },
+      ],
+    }));
+    resetForm();
   };
 
   handlDelete = id =>
@@ -39,37 +58,28 @@ export class App extends Component {
   };
 
   handleContactFilter = () => {
-    let contactFilter = [];
     const { filter, contacts } = this.state;
-    if (filter) {
-      contactFilter = contacts.filter(
-        contact =>
-          contact.name.includes(filter) ||
-          contact.name.toLocaleLowerCase().includes(filter)
-      );
-    } else {
-      return contacts;
-    }
-    return contactFilter;
+
+    return contacts.filter(contact =>
+      contact.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase())
+    );
   };
 
   render() {
-    const { contacts, filter } = this.state;
+    const { filter } = this.state;
 
     return (
       <Wrapper>
         <Container>
           <PhoneBookTitle>Phonebook</PhoneBookTitle>
-          <ContactsForm onSubmit={this.handleSubmit} contacts={contacts} />
+          <ContactsForm onSubmit={this.handleSubmit} />
         </Container>
         <Container>
           <ContactTitle>Contacts</ContactTitle>
           <ContactFilter onFilter={this.handleFilter} filter={filter} />
           <ContactList
-            contacts={contacts}
-            filter={filter}
             onDelete={this.handlDelete}
-            contactFilter={this.handleContactFilter}
+            contacts={this.handleContactFilter()}
           />
         </Container>
       </Wrapper>
